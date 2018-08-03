@@ -43,17 +43,19 @@ test_ftp_url()	# lftp may hang on some ftp problems, like no connection
 #	exec 6<>"/dev/tcp/$host/21" || { exec 2>&3 3>&-; return 2; }
 	exec 6<>"/dev/tcp/$host/21" || { exec 2>&3 3>&-; echo_with_time 'Bash network support is disabled. Skipping ftp check.'; return 0; }
 
-	echo -e "USER $login\n" >&6; read <&6
-	if ! echo "$REPLY" | grep -q '^220'; then exec 2>&3  3>&- 6>&-; return 3; fi	# 220 vsFTPd 3.0.2+ (ext.1) ready...
+	read <&6
+	if ! echo "${REPLY//$'\r'}" | grep -q '^220'; then exec 2>&3  3>&- 6>&-; return 3; fi	# 220 vsFTPd 3.0.2+ (ext.1) ready...
 
-	echo -e "PASS $pass\n" >&6; read <&6
-	if ! echo "$REPLY" | grep -q '^331'; then exec 2>&3  3>&- 6>&-; return 4; fi	# 331 Please specify the password.
+	echo -e "USER $login\r" >&6; read <&6
+	if ! echo "${REPLY//$'\r'}" | grep -q '^331'; then exec 2>&3  3>&- 6>&-; return 4; fi	# 331 Please specify the password.
 
-	echo -e "CWD $dir\n" >&6; read <&6
-	if ! echo "$REPLY" | grep -q '^230'; then exec 2>&3  3>&- 6>&-; return 5; fi	# 230 Login successful.
+	echo -e "PASS $pass\r" >&6; read <&6
+	if ! echo "${REPLY//$'\r'}" | grep -q '^230'; then exec 2>&3  3>&- 6>&-; return 5; fi	# 230 Login successful.
 
-	echo -e "QUIT\n" >&6; read <&6
-	if ! echo "$REPLY" | grep -q '^250'; then exec 2>&3  3>&- 6>&-; return 6; fi	# 250 Directory successfully changed.
+	echo -e "CWD $dir\r" >&6; read <&6
+	if ! echo "${REPLY//$'\r'}" | grep -q '^250'; then exec 2>&3  3>&- 6>&-; return 6; fi	# 250 Directory successfully changed.
+
+	echo -e "QUIT\r" >&6
 
 	exec 2>&3  3>&- 6>&-
 	return 0
