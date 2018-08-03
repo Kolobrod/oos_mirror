@@ -2,7 +2,7 @@
 
 [ "${FLOCKER}" != "$0" ] && exec env FLOCKER="$0" flock -en "$0" "$0" "$@" || :	# Boilerplate code from man flock, ensure only one instance is running
 
-VERSION='1.11'
+VERSION='1.12'
 
 echo_with_time()
 	{
@@ -277,7 +277,7 @@ if [ -z "$LOG_DIR" -o -z "$DOWNLOAD_DAYS_NEWER" ]; then
 fi
 
 CONFIG_TEMP_DIR="${CONFIG_TEMP_DIR:-/tmp}"
-TEMP_DIR="$CONFIG_TEMP_DIR/$THIS_SCRIPT_NAME"
+TEMP_DIR="$CONFIG_TEMP_DIR/${THIS_SCRIPT_NAME}_temporary"
 ZIP_DIR="$TEMP_DIR/zip"
 XML_DIR="$TEMP_DIR/xml"
 
